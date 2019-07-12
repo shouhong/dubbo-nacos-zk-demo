@@ -15,6 +15,7 @@ $ docker build -t producer .
 
 ## Run the example with docker-compose
 
+### Run with docker-compose
 ```
 $ cd docker
 $ docker-compose -f docker-compose-zk.yml up
@@ -25,9 +26,17 @@ $ docker-compose -f docker-compose-nacos.yml down
 * Add "-d" to run as background process.
 
 
-## Verify the example
+### Verify the example on docker
 
-1. **Access the consumer**
+1. **Access the Nacos admin console in the browser**
+
+	It can show the registered services in web UI.
+	
+	```
+	http://localhost:8848/nacos (nacos/nacos)
+	```
+	
+2. **Access the consumer**
 	
 	The cosumer will call producer and return a string.
 
@@ -36,10 +45,34 @@ $ docker-compose -f docker-compose-nacos.yml down
 	Greetings from Dubbo Docker
 	```
 	
-2. **Access the Nacos admin console in the browser**
+
+## Run the example with K8S	
+### Run with K8S
+```
+$ cd k8s
+$ kubectl create ns dubbo
+$ kubectl apply -f k8s-nacos.yml -n dubbo
+$ kuectl delete -f k8s-nacos.yml -n dubbo
+$ kubectl apply -f k8s-zk.yml -n dubbo
+$ kuectl delete -f k8s-zk.yml -n dubbo
+```
+
+### Verify the example on K8S
+
+1. **Access the Nacos admin console in the browser**
 
 	It can show the registered services in web UI.
 	
 	```
-	http://localhost:8848/nacos (nacos/nacos)
+	http://localhost:30848/nacos (nacos/nacos)
 	```
+	
+2. **Access the consumer**
+	
+	The cosumer will call producer and return a string.
+
+	```
+	$ curl http://localhost:30899
+	Greetings from Dubbo Docker
+	```
+	

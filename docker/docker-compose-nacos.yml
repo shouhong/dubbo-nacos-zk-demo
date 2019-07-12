@@ -15,7 +15,7 @@ services:
       - REGISTRY_PORT=8848
     depends_on:
       - nacos
-    command: ["./wait-for-it.sh", "nacos:5432", "--", "java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
+    command: ["/wait-for-it.sh", "nacos:8848", "--", "java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
   consumer:
     image: 'consumer:latest'
     environment:
@@ -25,6 +25,6 @@ services:
       - SERVER_PORT=8899
     depends_on:
       - nacos
-    command: ["./wait-for-it.sh", "nacos:5432", "--", "java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
+    command: ["./wait-for-it.sh", "nacos:8848", "--", "java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
     ports:
       - 8899:8899
