@@ -1,0 +1,30 @@
+version: "2"
+services:
+  nacos:
+    image: 'nacos/nacos-server:1.1.0'
+    hostname: nacos
+    environment:
+      - MODE=standalone
+    ports:
+      - 8848:8848
+  producer:
+    image: 'producer:latest'
+    environment:
+      - REGISTRY_PROTOCOL=nacos
+      - REGISTRY_SERVER=nacos
+      - REGISTRY_PORT=8848
+    depends_on:
+      - nacos
+    command: ["./wait-for-it.sh", "nacos:5432", "--", "java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
+  consumer:
+    image: 'consumer:latest'
+    environment:
+      - REGISTRY_PROTOCOL=nacos
+      - REGISTRY_SERVER=nacos
+      - REGISTRY_PORT=8848
+      - SERVER_PORT=8899
+    depends_on:
+      - nacos
+    command: ["./wait-for-it.sh", "nacos:5432", "--", "java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
+    ports:
+      - 8899:8899

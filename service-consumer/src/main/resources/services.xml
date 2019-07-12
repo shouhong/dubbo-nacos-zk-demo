@@ -6,7 +6,7 @@
 
     <dubbo:application name="consumer-app" />
 
-    <dubbo:registry protocol="zookeeper" address="${ZOOKEEPER_SERVER}:2181" />
+    <dubbo:registry protocol="${REGISTRY_PROTOCOL}" address="${REGISTRY_SERVER}:${REGISTRY_PORT}" />
 
     <dubbo:reference id="greetingService" interface="com.example.service.Greetings" />
 

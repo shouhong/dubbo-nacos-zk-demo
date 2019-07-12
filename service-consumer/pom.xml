@@ -52,6 +52,11 @@
             </exclusions>
         </dependency>
         <dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>dubbo-registry-nacos</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+        <dependency>
             <groupId>com.github.sgroschupf</groupId>
             <artifactId>zkclient</artifactId>
             <version>0.1</version>
