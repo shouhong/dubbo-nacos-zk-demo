@@ -3,7 +3,32 @@
 1. Run Dubbo example with Nacos/ZK as registry server.
 2. Reference: [https://github.com/binblee/dubbo-docker](https://github.com/binblee/dubbo-docker)
 
-## Build the example images
+## 1. Test on local machine
+
+```
+## start nacos
+$ ./run-nacos.sh
+
+## compile project 
+$ mvn clean package
+
+## run producer
+$ cd service-producer/target
+$ java -jar dubbo-service-producer-1.0-SNAPSHOT.jar
+
+## run consumer
+$ cd service-consumer/target
+$ java -jar dubbo-service-consumer-1.0-SNAPSHOT.jar
+
+## verify
+$ curl 127.0.0.1:8899
+Greetings from Dubbo Docker
+
+## stop nacos
+$ ./stop-nacos.sh
+```
+
+## 2. Build the example images
 
 ```
 $ mvn clean package
@@ -13,7 +38,7 @@ $ cd ../service-producer
 $ docker build -t producer .
 ```
 
-## Run the example with docker-compose
+## 3. Run the example with docker-compose
 
 ### Run with docker-compose
 ```
@@ -46,7 +71,7 @@ $ docker-compose -f docker-compose-nacos.yml down
 	```
 	
 
-## Run the example with K8S	
+## 4. Run the example with K8S	
 ### Run with K8S
 ```
 $ cd k8s

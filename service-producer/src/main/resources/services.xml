@@ -6,7 +6,7 @@
 
     <dubbo:application name="producer-app" />
 
-    <dubbo:registry protocol="${REGISTRY_PROTOCOL}" address="${REGISTRY_SERVER}:${REGISTRY_PORT}" />
+    <dubbo:registry protocol="${REGISTRY_PROTOCOL:nacos}" address="${REGISTRY_SERVER:127.0.0.1}:${REGISTRY_PORT:8848}" />
 
     <dubbo:protocol name="dubbo" port="20880" />
 

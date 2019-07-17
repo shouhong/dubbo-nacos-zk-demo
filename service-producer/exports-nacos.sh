@@ -1,3 +1,0 @@
-export REGISTRY_PROTOCOL=nacos
-export REGISTRY_SERVER=localhost
-export REGISTRY_PORT=30848
