@@ -10,12 +10,5 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>dubbo-service-api</artifactId>
-    <dependencies>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>dubbo</artifactId>
-            <version>2.5.3</version>
-        </dependency>
-    </dependencies>
 
 </project>
