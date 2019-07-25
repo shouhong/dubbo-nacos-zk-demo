@@ -1,0 +1,178 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nacos
+  labels:
+    app: nacos
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nacos
+    spec:
+      containers:
+      - image: nacos/nacos-server:1.1.0
+        imagePullPolicy: IfNotPresent
+        name: nacos
+        env:
+        - name: MODE
+          value: standalone
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: nacos
+  name: nacos
+spec:
+  ports:
+  - name: http-8848
+    port: 8848
+    targetPort: 8848
+    nodePort: 30848
+  type: NodePort
+  selector:
+    app: nacos
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: producer1
+  labels:
+    app: producer
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: producer
+        version: v1
+    spec:
+      containers:
+      - image: shouhong001/producer:ip-from-env
+        imagePullPolicy: IfNotPresent
+        name: producer
+        command:
+          - "/wait-for-it.sh"
+          - "nacos:8848"
+          - "--"
+          - "java"
+          - "-Djava.security.egd=file:/dev/./urandom"
+          - "-jar"
+          - "/app.jar"
+        env:
+        - name: VERSION
+          value: V1
+        - name: REGISTRY_PROTOCOL
+          value: nacos
+        - name: REGISTRY_SERVER
+          value: nacos
+        - name: REGISTRY_PORT
+          value: "8848"
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: producer2
+  labels:
+    app: producer
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: producer
+        version: v2
+    spec:
+      containers:
+      - image: shouhong001/producer:ip-from-env
+        imagePullPolicy: IfNotPresent
+        name: producer
+        command:
+          - "/wait-for-it.sh"
+          - "nacos:8848"
+          - "--"
+          - "java"
+          - "-Djava.security.egd=file:/dev/./urandom"
+          - "-jar"
+          - "/app.jar"
+        env:
+        - name: VERSION
+          value: V2
+        - name: REGISTRY_PROTOCOL
+          value: nacos
+        - name: REGISTRY_SERVER
+          value: nacos
+        - name: REGISTRY_PORT
+          value: "8848"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations: 
+    servicetype: dubbo
+  labels:
+    app: producer
+  name: producer
+spec:
+  ports:
+  - name: x-dubbo-port
+    protocol: TCP
+    port: 20880
+    targetPort: 20880
+  selector:
+    app: producer
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: consumer
+  labels:
+    app: consumer
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: consumer
+    spec:
+      containers:
+      - image: 10.7.92.30/dubbo/consumer
+        imagePullPolicy: IfNotPresent
+        name: consumer
+        command:
+          - "/wait-for-it.sh"
+          - "nacos:8848"
+          - "--"
+          - "java"
+          - "-Djava.security.egd=file:/dev/./urandom"
+          - "-jar"
+          - "/app.jar"
+        env:
+        - name: PROVIDER_CLUSER_IP
+          value: producer
+        - name: REGISTRY_PROTOCOL
+          value: nacos
+        - name: REGISTRY_SERVER
+          value: nacos
+        - name: REGISTRY_PORT
+          value: "8848"
+        - name: SERVER_PORT
+          value: "8899"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: consumer
+  name: consumer
+spec:
+  ports:
+  - name: http-8899
+    port: 8899
+    targetPort: 8899
+    nodePort: 30899
+  type: NodePort
+  selector:
+    app: consumer

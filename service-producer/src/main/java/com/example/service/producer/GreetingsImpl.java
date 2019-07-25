@@ -7,6 +7,6 @@ import com.example.service.Greetings;
  */
 public class GreetingsImpl implements Greetings {
     public String say(String name) {
-        return "Greetings from " + name;
+        return "Greetings from " + name + " -- " + System.getenv("VERSION");
     }
 }

@@ -1,0 +1,17 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: producer-weight
+spec:
+  hosts:
+    - producer
+  http:
+  - route:
+    - destination:
+        host: producer
+        subset: v1
+      weight: 20
+    - destination:
+        host: producer
+        subset: v2
+      weight: 80
