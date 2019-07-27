@@ -15,6 +15,8 @@ spec:
       - image: nacos/nacos-server:1.1.0
         imagePullPolicy: IfNotPresent
         name: nacos
+        ports:
+        - containerPort: 8848
         env:
         - name: MODE
           value: standalone
@@ -61,6 +63,8 @@ spec:
           - "-Djava.security.egd=file:/dev/./urandom"
           - "-jar"
           - "/app.jar"
+        ports:
+        - containerPort: 20880
         env:
         - name: VERSION
           value: V1
@@ -97,6 +101,8 @@ spec:
           - "-Djava.security.egd=file:/dev/./urandom"
           - "-jar"
           - "/app.jar"
+        ports:
+        - containerPort: 20880
         env:
         - name: VERSION
           value: V2
@@ -149,6 +155,8 @@ spec:
           - "-Djava.security.egd=file:/dev/./urandom"
           - "-jar"
           - "/app.jar"
+        ports:
+        - containerPort: 8899
         env:
         - name: PROVIDER_CLUSER_IP
           value: producer

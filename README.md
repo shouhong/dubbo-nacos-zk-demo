@@ -112,9 +112,9 @@ $ kuectl delete -f k8s-zk.yml -n dubbo
 ### Deploy the example on K8S
 ```
 $ cd sofa
-$ istioctl kube-inject k8s-nacos-all-dubbo.yml > k8s-nacos-all-dubbo-istio.yml
+$ istioctl kube-inject k8s-dubbo-nacos-all.yml > k8s-dubbo-nacos-all-istio.yml
 $ kubectl create ns dubbo
-$ kubectl apply -f k8s-nacos-all-dubbo-istio.yml -n dubbo
+$ kubectl apply -f k8s-dubbo-nacos-all-istio.yml -n dubbo
 ```
 
 ### Verify the example without service mesh control
@@ -124,32 +124,82 @@ Greetings from Dubbo Docker -- V1
 $ curl http://localhost:30899
 Greetings from Dubbo Docker -- V2
 ...
-## V1 and V2 appear in randomly
+## V1 and V2 appear in turn
 ```
 
 ### Create the destionation rule
 ```
-$ kubectl apply -f producer-destinationrule.yml -n dubbo
+$ kubectl apply -f dr-producer.yml -n dubbo
 ```
 
 ### Verify the example with route by version
 ```
-$ kubectl apply -f producer-vs-v1.yml -n dubbo
+$ kubectl apply -f vs-producer-v1.yml -n dubbo
 $ curl http://localhost:30899
 ## Always return V1
-$ kubectl delete -f producer-vs-v1.yml -n dubbo
+$ kubectl delete -f vs-producer-v1.yml -n dubbo
 
-$ kubectl delete -f producer-vs-v1.yml -n dubbo
-$ kubectl apply -f producer-vs-v2.yml -n dubbo
+$ kubectl apply -f vs-producer-v2.yml -n dubbo
 $ curl http://localhost:30899
 ## Always return V2
-$ kubectl delete -f producer-vs-v2.yml -n dubbo
+$ kubectl delete -f vs-producer-v2.yml -n dubbo
 ```
 
 ### Verify the example with route by weight
 ```
-$ kubectl apply -f producer-vs-weight.yml -n dubbo
+$ kubectl apply -f vs-producer-weight.yml -n dubbo
 $ curl http://localhost:30899
 ## The portation of V1 and V2 is about 20%:80%
-$ kubectl delete -f producer-vs-weight.yml -n dubbo
+$ kubectl delete -f vs-producer-weight.yml -n dubbo
+```
+
+### Enable mTLS
+```
+## Enable mTLS globally
+$ kubectl apply -f mtls-enable-global.yml
+
+## Update producer destionationrule to use mTLS
+$ kubectl apply -f dr-producer-mtls.yml -n dubbo
+
+## Disable mTLS for consumer because it needs to be accessed from client  without sidecar.
+$ kubectl apply -f mtls-disable-consumer.yml -n dubbo
+
+## Deploy a client pod for test
+$ kubectl apply -f sleep.yml -n dubbo
+
+## Verify the mTLS has been configured successfully
+$ istioctl authn tls-check <sleep-pod-id>.dubbo
+HOST:PORT                                                     STATUS       SERVER     CLIENT     AUTHN POLICY                                 DESTINATION RULE
+nacos.dubbo.svc.cluster.local:8848                            OK           mTLS       mTLS       default/                                     default/istio-system
+producer.dubbo.svc.cluster.local:20880                        OK           mTLS       mTLS       default/                                     producer/dubbo
+consumer.dubbo.svc.cluster.local:8899                         OK           HTTP       HTTP       consumer-disable-mtls/dubbo                  consumer-disabel-mtls/dubbo
+...
+
+## Verify the sample can be accessed successfully from sleep pod
+$ curl http://consumer:8899
+Greetings from Dubbo Docker -- V1
+
+## Verify the sample can be accessed successfully from outside
+$ curl http://localhost:30899
+Greetings from Dubbo Docker -- V1
+```
+
+### RBAC Test
+```
+## To use RBAC function, the mTLS needs to be enabled first.
+
+## Create ClusterRbacConfig to enable authorization for producer service
+$ kubectl apply -f rbac-config-producer.yml
+
+## Verify the sample cannot work anymore, access from sleep pod (need wait some time for the change to take effect)
+$ http http://consumer.dubbo:8899
+HTTP/1.1 500 Internal Server Error
+...
+
+## Create ServieRole and ServiceRoleBinding to authorize default service account in dubbo namespace to access producer service
+$ kubectl apply -f rbac-policy-producer.yml -n dubbo
+
+## Verify the sample can work again (need wait some time for the change to take effect)
+$ http http://consumer.dubbo:8899
+Greetings from Dubbo Docker -- V1
 ```

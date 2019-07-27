@@ -1,0 +1,22 @@
+apiVersion: "rbac.istio.io/v1alpha1"
+kind: ServiceRole
+metadata:
+  name: producer
+spec:
+  rules:
+  - services: ["producer.dubbo.svc.cluster.local"]
+    constraints:
+    - key: "destination.port"
+      values: ["20880"]
+---
+apiVersion: "rbac.istio.io/v1alpha1"
+kind: ServiceRoleBinding
+metadata:
+  name: bind-producer
+spec:
+  subjects:
+  - user: "cluster.local/ns/dubbo/sa/default"
+  roleRef:
+    kind: ServiceRole
+    name: "producer"
+---

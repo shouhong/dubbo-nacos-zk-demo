@@ -1,0 +1,17 @@
+apiVersion: "authentication.istio.io/v1alpha1"
+kind: "Policy"
+metadata:
+  name: "consumer-disable-mtls"
+spec:
+  targets:
+  - name: consumer
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+    name: consumer-disabel-mtls
+spec:
+    host: "consumer.dubbo.svc.cluster.local"
+    trafficPolicy:
+      tls:
+        mode: DISABLE
