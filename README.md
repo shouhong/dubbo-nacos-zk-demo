@@ -112,7 +112,7 @@ $ kuectl delete -f k8s-zk.yml -n dubbo
 ### Deploy the example on K8S
 ```
 $ cd sofa
-$ istioctl kube-inject k8s-dubbo-nacos-all.yml > k8s-dubbo-nacos-all-istio.yml
+$ istioctl kube-inject -f k8s-dubbo-nacos-all.yml > k8s-dubbo-nacos-all-istio.yml
 $ kubectl create ns dubbo
 $ kubectl apply -f k8s-dubbo-nacos-all-istio.yml -n dubbo
 ```
