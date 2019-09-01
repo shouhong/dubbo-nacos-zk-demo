@@ -26,6 +26,7 @@ kind: Service
 metadata:
   labels:
     app: nacos
+    system/mesh-upstream: "true"
   name: nacos
 spec:
   ports:
@@ -120,6 +121,7 @@ metadata:
     servicetype: dubbo
   labels:
     app: producer
+    system/mesh-upstream: "true"
   name: producer
 spec:
   ports:
@@ -174,6 +176,7 @@ kind: Service
 metadata:
   labels:
     app: consumer
+    system/mesh-upstream: "true"
   name: consumer
 spec:
   ports:
