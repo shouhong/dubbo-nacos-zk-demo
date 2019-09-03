@@ -156,33 +156,27 @@ $ kubectl delete -f vs-producer-weight.yml -n dubbo
 ### Enable mTLS
 ```
 ## Enable mTLS globally
-$ kubectl apply -f mtls-enable-global.yml
-
-## Update producer destionationrule to use mTLS
-$ kubectl apply -f dr-producer-mtls.yml -n dubbo
-
-## Disable mTLS for consumer because it needs to be accessed from client  without sidecar.
-$ kubectl apply -f mtls-disable-consumer.yml -n dubbo
+$ kubectl apply -f mtls-enable-dubbo.yml -n dubbo
 
 ## Deploy a client pod for test
-$ kubectl apply -f sleep.yml -n dubbo
+$ istioctl kube-inject -f sleep.yml > sleep-istio.yml
+$ kubectl apply -f sleep-istio.yml -n dubbo
 
 ## Verify the mTLS has been configured successfully
-$ istioctl authn tls-check <sleep-pod-id>.dubbo
-HOST:PORT                                                     STATUS       SERVER     CLIENT     AUTHN POLICY                                 DESTINATION RULE
-nacos.dubbo.svc.cluster.local:8848                            OK           mTLS       mTLS       default/                                     default/istio-system
-producer.dubbo.svc.cluster.local:20880                        OK           mTLS       mTLS       default/                                     producer/dubbo
-consumer.dubbo.svc.cluster.local:8899                         OK           HTTP       HTTP       consumer-disable-mtls/dubbo                  consumer-disabel-mtls/dubbo
-...
+$ istioctl authn tls-check <producer1_pod_id> -n dubbo | grep '\.dubbo.svc'
+HOST:PORT                                                     STATUS       SERVER     CLIENT     AUTHN POLICY                  consumer.dubbo.svc.cluster.local:8899                                        OK         mTLS       mTLS       default/dubbo     default/dubbo
+nacos.dubbo.svc.cluster.local:8848                                           OK         mTLS       mTLS       default/dubbo     default/dubbo
+producer.dubbo.svc.cluster.local:20880                                       OK         mTLS       mTLS       default/dubbo     default/dubbo
+sleep.dubbo.svc.cluster.local:80                                             OK         mTLS       mTLS       default/dubbo     default/dubbo
+
 
 ## Verify the sample can be accessed successfully from sleep pod
 $ curl http://consumer:8899
 Greetings from Dubbo Docker -- V1
 
-## Verify the sample can be accessed successfully from outside
-$ curl http://localhost:30899
-Greetings from Dubbo Docker -- V1
-```
+## Disable mTLS 
+$ kubectl delete -f mtls-enable-dubbo.yml -n dubbo
+
 
 ### RBAC Test
 ```
