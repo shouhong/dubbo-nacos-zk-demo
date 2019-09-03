@@ -164,7 +164,8 @@ $ kubectl apply -f sleep-istio.yml -n dubbo
 
 ## Verify the mTLS has been configured successfully
 $ istioctl authn tls-check <producer1_pod_id> -n dubbo | grep '\.dubbo.svc'
-HOST:PORT                                                     STATUS       SERVER     CLIENT     AUTHN POLICY                  consumer.dubbo.svc.cluster.local:8899                                        OK         mTLS       mTLS       default/dubbo     default/dubbo
+HOST:PORT                                                     STATUS       SERVER     CLIENT     AUTHN POLICY                  
+consumer.dubbo.svc.cluster.local:8899                                        OK         mTLS       mTLS       default/dubbo     default/dubbo
 nacos.dubbo.svc.cluster.local:8848                                           OK         mTLS       mTLS       default/dubbo     default/dubbo
 producer.dubbo.svc.cluster.local:20880                                       OK         mTLS       mTLS       default/dubbo     default/dubbo
 sleep.dubbo.svc.cluster.local:80                                             OK         mTLS       mTLS       default/dubbo     default/dubbo
