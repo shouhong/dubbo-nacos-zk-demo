@@ -169,14 +169,13 @@ nacos.dubbo.svc.cluster.local:8848                                           OK 
 producer.dubbo.svc.cluster.local:20880                                       OK         mTLS       mTLS       default/dubbo     default/dubbo
 sleep.dubbo.svc.cluster.local:80                                             OK         mTLS       mTLS       default/dubbo     default/dubbo
 
-
 ## Verify the sample can be accessed successfully from sleep pod
 $ curl http://consumer:8899
 Greetings from Dubbo Docker -- V1
 
 ## Disable mTLS 
 $ kubectl delete -f mtls-enable-dubbo.yml -n dubbo
-
+```
 
 ### RBAC Test
 ```
