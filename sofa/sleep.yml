@@ -5,6 +5,7 @@ metadata:
   labels:
     app: sleep
     version: v1
+    system/mesh-upstream: "true"
 spec:
   selector:
     app: sleep
