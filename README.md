@@ -154,5 +154,5 @@ $ kubectl delete -f vs-producer-weight.yml -n dubbo
 ```
 
 ### mTLS and RBAC test
-[rbac-demo/README.md](file://rbac-demo/README.md)
+[rbac-demo/README.md](https://github.com/shouhong/dubbo-nacos-zk-demo/blob/master/rbac-demo/README.md)
 
