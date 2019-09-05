@@ -153,47 +153,6 @@ $ curl http://localhost:30899
 $ kubectl delete -f vs-producer-weight.yml -n dubbo
 ```
 
-### Enable mTLS
-```
-## Enable mTLS globally
-$ kubectl apply -f mtls-enable-dubbo.yml -n dubbo
+### mTLS and RBAC test
+[rbac-demo/README.md](file://rbac-demo/README.md)
 
-## Deploy a client pod for test
-$ istioctl kube-inject -f sleep.yml > sleep-istio.yml
-$ kubectl apply -f sleep-istio.yml -n dubbo
-
-## Verify the mTLS has been configured successfully
-$ istioctl authn tls-check <producer1_pod_id> -n dubbo | grep '\.dubbo.svc'
-HOST:PORT                                                     STATUS       SERVER     CLIENT     AUTHN POLICY                  
-consumer.dubbo.svc.cluster.local:8899                                        OK         mTLS       mTLS       default/dubbo     default/dubbo
-nacos.dubbo.svc.cluster.local:8848                                           OK         mTLS       mTLS       default/dubbo     default/dubbo
-producer.dubbo.svc.cluster.local:20880                                       OK         mTLS       mTLS       default/dubbo     default/dubbo
-sleep.dubbo.svc.cluster.local:80                                             OK         mTLS       mTLS       default/dubbo     default/dubbo
-
-## Verify the sample can be accessed successfully from sleep pod
-$ curl http://consumer:8899
-Greetings from Dubbo Docker -- V1
-
-## Disable mTLS 
-$ kubectl delete -f mtls-enable-dubbo.yml -n dubbo
-```
-
-### RBAC Test
-```
-## To use RBAC function, the mTLS needs to be enabled first.
-
-## Create ClusterRbacConfig to enable authorization for producer service
-$ kubectl apply -f rbac-config-producer.yml
-
-## Verify the sample cannot work anymore, access from sleep pod (need wait some time for the change to take effect)
-$ http http://consumer.dubbo:8899
-HTTP/1.1 500 Internal Server Error
-...
-
-## Create ServieRole and ServiceRoleBinding to authorize default service account in dubbo namespace to access producer service
-$ kubectl apply -f rbac-policy-producer.yml -n dubbo
-
-## Verify the sample can work again (need wait some time for the change to take effect)
-$ http http://consumer.dubbo:8899
-Greetings from Dubbo Docker -- V1
-```

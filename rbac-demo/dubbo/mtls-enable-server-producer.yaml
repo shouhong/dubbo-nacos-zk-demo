@@ -1,0 +1,10 @@
+apiVersion: "authentication.istio.io/v1alpha1"
+kind: "Policy"
+metadata:
+  name: "enable-producer-tls"
+  namespace: rbactest
+spec:
+  targets:
+  - name: producer
+  peers:
+  - mtls: {}

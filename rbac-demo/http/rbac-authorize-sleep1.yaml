@@ -1,0 +1,22 @@
+apiVersion: "rbac.istio.io/v1alpha1"
+kind: ServiceRole
+metadata:
+  name: httpbin
+  namespace: rbactest
+spec:
+  rules:
+  - services:
+    - httpbin.rbactest.svc.cluster.local
+---
+apiVersion: "rbac.istio.io/v1alpha1"
+kind: ServiceRoleBinding
+metadata:
+  name: httpbin
+  namespace: rbactest
+spec:
+  subjects:
+  - names:
+    - "spiffe://cluster.local/ns/rbactest/sa/sleep1"
+  roleRef:
+    kind: ServiceRole
+    name: httpbin
